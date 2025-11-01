@@ -8,18 +8,37 @@
 // https://on.cypress.io/custom-commands
 // ***********************************************
 //
-//
-// -- This is a parent command --
-// Cypress.Commands.add('login', (email, password) => { ... })
-//
-//
-// -- This is a child command --
-// Cypress.Commands.add('drag', { prevSubject: 'element'}, (subject, options) => { ... })
-//
-//
-// -- This is a dual command --
-// Cypress.Commands.add('dismiss', { prevSubject: 'optional'}, (subject, options) => { ... })
-//
-//
-// -- This will overwrite an existing command --
-// Cypress.Commands.overwrite('visit', (originalFn, url, options) => { ... })
+
+// cypress/support/commands.js
+import { userData } from '../fixtures/userData';
+import loginPage from '../pages/loginPage';
+import homePage from '../pages/homePage';
+
+const homeObject = new homePage();
+const loginObject = new loginPage();
+Cypress.Commands.add('uiLoginAndCache', () => {
+  cy.session(
+    `session-${userData.existingUser.username}`,
+    () => {
+      cy.visit('/');
+      homeObject.openLoginModal();
+      loginObject.login(
+        userData.existingUser.username,
+        userData.existingUser.password
+      );
+      loginObject.verifyLoginSuccess(userData.existingUser.username);
+      cy.getCookie('tokenp_')
+        .should('exist')
+        .then((cookie) => {
+          Cypress.env('AUTH_TOKEN', cookie?.value);
+          cy.setCookie('tokenp_', cookie?.value); // Ensure cookie is set for future requests
+          cy.window().then((win) => {
+            win.localStorage.setItem('authToken', cookie?.value);
+          });
+        });
+    },
+    {
+      cacheAcrossSpecs: true,
+    }
+  );
+});

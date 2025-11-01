@@ -4,11 +4,19 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "loginTests": "cypress run --browser chrome --spec 'cypress/e2e/login.cy.js'",
+    "purchaseTests": "cypress run --browser chrome --spec 'cypress/e2e/purchase.cy.js'",
+    "allTests": "cypress run --browser chrome --spec 'cypress/e2e/*.cy.js'",
+    "format": "prettier --write \"**/*.{js,json,md}\"",
+    "format:check": "prettier --check \"**/*.{js,json,md}\"",
+    "format:cypress": "prettier --write \"cypress/**/*.{js,json}\""
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
     "cypress": "^15.5.0"
+  },
+  "devDependencies": {
+    "prettier": "^3.0.0"
   }
 }

@@ -14,4 +14,26 @@
 // ***********************************************************
 
 // Import commands.js using ES2015 syntax:
-import './commands'
+import './commands';
+
+before(() => {
+  cy.clearCookies();
+  cy.clearLocalStorage();
+  cy.window().then((win) => {
+    win.sessionStorage.clear();
+  });
+});
+beforeEach(function () {
+  const specFile = Cypress.spec.name;
+
+  // Skip login for login spec
+  if (specFile.includes('login.cy')) {
+    cy.clearLocalStorage();
+    cy.window().then((win) => {
+      win.sessionStorage.clear();
+    });
+    return;
+  } else {
+    cy.uiLoginAndCache();
+  }
+});
